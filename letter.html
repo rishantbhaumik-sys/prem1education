@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Prem Education App</title>
+
+<link rel="icon" href="logo.jpg">
+
+<style>
+
+body{
+margin:0;
+font-family:Comic Sans MS;
+background:linear-gradient(135deg,#89f7fe,#66a6ff);
+text-align:center;
+}
+
+/* INTRO */
+
+#intro{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+overflow:hidden;
+}
+
+#introVideo{
+position:absolute;
+top:50%;
+left:50%;
+min-width:100%;
+min-height:100%;
+transform:translate(-50%,-50%);
+object-fit:cover;
+}
+
+.loading{
+position:absolute;
+bottom:40px;
+left:50%;
+transform:translateX(-50%);
+color:white;
+font-size:30px;
+}
+
+/* PASSWORD */
+
+#passwordScreen{
+display:none;
+padding-top:150px;
+}
+
+/* HOME */
+
+#home{
+display:none;
+padding-top:60px;
+}
+
+/* LOGO */
+
+.logo{
+width:220px;
+height:220px;
+border-radius:50%;
+display:block;
+margin:20px auto;
+box-shadow:0 0 40px gold;
+border:6px solid gold;
+}
+
+/* TITLE */
+
+.title{
+font-size:50px;
+color:white;
+text-shadow:3px 3px 10px black;
+margin-bottom:40px;
+}
+
+/* BUTTON GRID */
+
+.homeButtons{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+width:500px;
+margin:auto;
+}
+
+/* BUTTON */
+
+.btn{
+font-size:25px;
+padding:15px 35px;
+border:none;
+border-radius:30px;
+cursor:pointer;
+background:#ff4b2b;
+color:white;
+transition:0.3s;
+}
+
+.btn:hover{
+background:#ff8c00;
+transform:scale(1.1);
+}
+
+/* PHONICS */
+
+#game{display:none}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(6,1fr);
+gap:15px;
+width:600px;
+margin:auto;
+}
+
+.letterBtn{
+font-size:35px;
+padding:20px;
+border:none;
+border-radius:15px;
+background:#00c6ff;
+color:white;
+cursor:pointer;
+}
+
+/* SONG */
+
+#songPage{display:none}
+
+/* QUIZ */
+
+#math{display:none}
+
+.question{
+font-size:40px;
+margin:30px;
+}
+
+.options{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:15px;
+width:500px;
+margin:auto;
+}
+
+.optionBtn{
+font-size:25px;
+padding:15px;
+border:none;
+border-radius:15px;
+background:#ffd200;
+cursor:pointer;
+}
+
+.score{
+font-size:30px;
+margin:20px;
+}
+
+/* SPELLING */
+
+#spelling{display:none}
+
+#spellMessage{
+font-size:30px;
+color:white;
+margin:10px;
+}
+
+/* GALLERY */
+
+#gallery{display:none}
+
+.galleryGrid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+width:800px;
+margin:auto;
+}
+
+.galleryGrid img{
+width:100%;
+border-radius:15px;
+cursor:pointer;
+}
+
+/* IMAGE VIEW */
+
+#viewer{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.9);
+justify-content:center;
+align-items:center;
+}
+
+#viewer img{
+max-width:90%;
+max-height:90%;
+}
+
+.close{
+position:absolute;
+top:30px;
+right:40px;
+font-size:40px;
+color:white;
+cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- INTRO -->
+
+<div id="intro">
+<video id="introVideo" autoplay muted>
+<source src="hhh.mp4">
+</video>
+<div class="loading">Loading...</div>
+</div>
+
+<!-- PASSWORD -->
+
+<div id="passwordScreen">
+<h1 class="title">Enter Password</h1>
+<input type="password" id="password" style="padding:15px;font-size:20px;border-radius:10px;border:none;">
+<br><br>
+<button class="btn" onclick="checkPassword()">Enter</button>
+</div>
+
+<!-- HOME -->
+
+<div id="home">
+
+<img src="logo.jpg" class="logo">
+
+<h1 class="title">Prem Education App</h1>
+
+<div class="homeButtons">
+
+<button class="btn" onclick="startGame()">Phonics Game</button>
+
+<button class="btn" onclick="openMath()">Math Quiz</button>
+
+<button class="btn" onclick="openSong()">Phonics Song</button>
+
+<button class="btn" onclick="openSpelling()">Hard Spelling Game</button>
+
+<button class="btn" onclick="openGallery()">Our Gallery</button>
+
+<a href="https://rishantbhaumik-sys.github.io/prem1education/" target="_blank">
+<button class="btn">Website</button>
+</a>
+
+</div>
+
+</div>
+
+<!-- PHONICS GAME -->
+
+<div id="game">
+
+<h1 class="title">Phonics Game</h1>
+
+<div class="grid" id="letters"></div>
+
+<br>
+
+<button class="btn" onclick="goHome()">Home</button>
+
+</div>
+
+<!-- SONG -->
+
+<div id="songPage">
+
+<h1 class="title">Phonics Song</h1>
+
+<button class="btn" onclick="playSong()">Play</button>
+<button class="btn" onclick="pauseSong()">Pause</button>
+
+<br><br>
+
+<button class="btn" onclick="goHome()">Home</button>
+
+</div>
+
+<!-- MATH QUIZ -->
+
+<div id="math">
+
+<h1 class="title">Math Quiz</h1>
+
+<div class="question" id="question"></div>
+
+<div class="options" id="options"></div>
+
+<div class="score">Score: <span id="score">0</span></div>
+
+<button class="btn" onclick="goHome()">Home</button>
+
+</div>
+
+<!-- SPELLING GAME -->
+
+<div id="spelling">
+
+<h1 class="title">Hard Spelling Game</h1>
+
+<div class="question" id="scrambledWord"></div>
+
+<div id="spellMessage"></div>
+
+<div class="options" id="spellOptions"></div>
+
+<div class="score">Score: <span id="spellScore">0</span></div>
+
+<button class="btn" onclick="goHome()">Home</button>
+
+</div>
+
+<!-- GALLERY -->
+
+<div id="gallery">
+
+<h1 class="title">Our Gallery</h1>
+
+<div class="galleryGrid">
+
+<img src="yoga.jpg" onclick="openImage(this)">
+<img src="mandir.jpg" onclick="openImage(this)">
+<img src="mandir1.jpg" onclick="openImage(this)">
+<img src="mandir2.jpg" onclick="openImage(this)">
+<img src="mandir3.jpg" onclick="openImage(this)">
+<img src="sadhu.jpg" onclick="openImage(this)">
+<img src="dadu.jpg" onclick="openImage(this)">
+
+</div>
+
+<br>
+
+<button class="btn" onclick="goHome()">Home</button>
+
+</div>
+
+<!-- IMAGE VIEW -->
+
+<div id="viewer">
+
+<span class="close" onclick="closeImage()">✖</span>
+
+<img id="bigImage">
+
+</div>
+
+<audio id="phonicsSong" src="phonics_song.mp3"></audio>
+
+<script>
+
+/* INTRO */
+
+setTimeout(()=>{
+intro.style.display="none"
+passwordScreen.style.display="block"
+},5000)
+
+/* PASSWORD */
+
+function checkPassword(){
+
+let pass=document.getElementById("password").value
+
+if(pass==="SADHVI"){
+
+passwordScreen.style.display="none"
+home.style.display="block"
+
+}else{
+
+alert("Wrong Password")
+
+}
+
+}
+
+/* PHONICS */
+
+let letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let lettersDiv=document.getElementById("letters")
+
+for(let l of letters){
+
+let btn=document.createElement("button")
+
+btn.innerText=l
+btn.className="letterBtn"
+
+btn.onclick=()=>{
+
+let speech=new SpeechSynthesisUtterance(l)
+speech.pitch=1.4
+speech.rate=0.8
+
+speechSynthesis.speak(speech)
+
+}
+
+lettersDiv.appendChild(btn)
+
+}
+
+function startGame(){
+
+home.style.display="none"
+game.style.display="block"
+
+}
+
+/* SONG */
+
+let song=document.getElementById("phonicsSong")
+
+function openSong(){
+
+home.style.display="none"
+songPage.style.display="block"
+
+}
+
+function playSong(){song.play()}
+function pauseSong(){song.pause()}
+
+/* MATH */
+
+let correctAnswer
+let score=0
+
+function openMath(){
+
+home.style.display="none"
+math.style.display="block"
+
+generateQuestion()
+
+}
+
+function generateQuestion(){
+
+let a=Math.floor(Math.random()*20)
+let b=Math.floor(Math.random()*20)
+
+correctAnswer=a+b
+
+document.getElementById("question").innerHTML=a+" + "+b
+
+let arr=[correctAnswer]
+
+for(let i=0;i<5;i++){
+
+arr.push(correctAnswer+Math.floor(Math.random()*10)-5)
+
+}
+
+arr.sort(()=>Math.random()-0.5)
+
+let html=""
+
+arr.forEach(o=>{
+
+html+=`<button class="optionBtn" onclick="check(${o})">${o}</button>`
+
+})
+
+document.getElementById("options").innerHTML=html
+
+}
+
+function check(ans){
+
+if(ans==correctAnswer){score++}
+
+document.getElementById("score").innerText=score
+
+generateQuestion()
+
+}
+
+/* SPELLING */
+
+let spellWords=[
+"ELEPHANT","COMPUTER","LANGUAGE","EDUCATION",
+"NOTEBOOK","CHILDREN","ADVENTURE","SCIENCE",
+"KNOWLEDGE","INTERNET"
+]
+
+let currentSpell=""
+let spellScore=0
+
+function openSpelling(){
+
+home.style.display="none"
+spelling.style.display="block"
+
+generateSpelling()
+
+}
+
+function generateSpelling(){
+
+currentSpell=spellWords[Math.floor(Math.random()*spellWords.length)]
+
+let scrambled=currentSpell.split("").sort(()=>Math.random()-0.5).join("")
+
+document.getElementById("scrambledWord").innerText=scrambled
+
+let options=[currentSpell]
+
+while(options.length<6){
+
+let wrong=spellWords[Math.floor(Math.random()*spellWords.length)]
+
+if(!options.includes(wrong)){
+
+options.push(wrong)
+
+}
+
+}
+
+options.sort(()=>Math.random()-0.5)
+
+let html=""
+
+options.forEach(o=>{
+
+html+=`<button class="optionBtn" onclick="checkSpelling('${o}')">${o}</button>`
+
+})
+
+document.getElementById("spellOptions").innerHTML=html
+
+}
+
+function checkSpelling(ans){
+
+let msg=document.getElementById("spellMessage")
+
+if(ans===currentSpell){
+
+spellScore++
+msg.innerHTML="✅ Correct!"
+
+}else{
+
+msg.innerHTML="❌ Wrong! Correct spelling: "+currentSpell
+
+}
+
+document.getElementById("spellScore").innerText=spellScore
+
+setTimeout(()=>{
+
+msg.innerHTML=""
+generateSpelling()
+
+},1500)
+
+}
+
+/* GALLERY */
+
+function openGallery(){
+
+home.style.display="none"
+gallery.style.display="block"
+
+}
+
+function openImage(img){
+
+viewer.style.display="flex"
+bigImage.src=img.src
+
+}
+
+function closeImage(){
+
+viewer.style.display="none"
+
+}
+
+/* HOME */
+
+function goHome(){
+
+game.style.display="none"
+math.style.display="none"
+gallery.style.display="none"
+songPage.style.display="none"
+spelling.style.display="none"
+
+home.style.display="block"
+
+}
+
+</script>
+
+</body>
+</html>
