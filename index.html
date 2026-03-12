@@ -403,25 +403,35 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/fireba
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
 const firebaseConfig = {
-apiKey: "AIzaSyB24Gxxkph7TVwmOpBJHBplWgSqwwyrvfE",
-authDomain: "prem-education-f3aa0.firebaseapp.com",
-projectId: "prem-education-f3aa0",
-storageBucket: "prem-education-f3aa0.firebasestorage.app",
-messagingSenderId: "25241355400",
-appId: "1:25241355400:web:872747631f965b26060b3d"
+apiKey: "AIzaSyBgX_WxNS8rIEKXZWW0WWLYUc-7Y-IkEWU",
+authDomain: "prem-aaa63.firebaseapp.com",
+projectId: "prem-aaa63",
+storageBucket: "prem-aaa63.firebasestorage.app",
+messagingSenderId: "70425819398",
+appId: "1:70425819398:web:833411745633318e0dc687"
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth();
+const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-window.loginUser = function(){
-signInWithPopup(auth,provider);
+window.googleLogin = function(){
+
+signInWithPopup(auth, provider)
+.then((result)=>{
+alert("Login Successful");
+})
+.catch((error)=>{
+console.log(error);
+});
+
 }
 
 window.logout = function(){
 signOut(auth);
 }
+
+</script>
 
 onAuthStateChanged(auth,(user)=>{
 
@@ -444,4 +454,5 @@ document.getElementById("userArea").style.display="none";
 
 </body>
 </html>
+
 
