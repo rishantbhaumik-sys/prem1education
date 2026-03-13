@@ -59,8 +59,6 @@ nav ul li a:hover{
   border-radius:5px;
 }
 
-/* LOGIN AREA RIGHT SIDE */
-
 .login-area{
 margin-left:auto;
 display:flex;
@@ -93,101 +91,101 @@ border-radius:50%;
 }
 
 .hero{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  height:400px;
-  text-align:center;
-  color:white;
-  background:rgba(0,0,0,0.4);
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+height:400px;
+text-align:center;
+color:white;
+background:rgba(0,0,0,0.4);
 }
 
 .hero h2{
-  font-size:40px;
-  margin-bottom:15px;
+font-size:40px;
+margin-bottom:15px;
 }
 
 .hero p{
-  font-size:22px;
-  margin-bottom:20px;
+font-size:22px;
+margin-bottom:20px;
 }
 
 .hero .donate-btn{
-  padding:15px 25px;
-  font-size:18px;
-  background:#ff5722;
-  color:white;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  text-decoration:none;
+padding:15px 25px;
+font-size:18px;
+background:#ff5722;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+text-decoration:none;
 }
 
 .hero .donate-btn:hover{
-  background:#e64a19;
+background:#e64a19;
 }
 
 section{
-  padding:60px 20px;
-  max-width:1000px;
-  margin:20px auto;
-  background:rgba(255,255,255,0.95);
-  border-radius:12px;
+padding:60px 20px;
+max-width:1000px;
+margin:20px auto;
+background:rgba(255,255,255,0.95);
+border-radius:12px;
 }
 
 section h2{
-  font-size:32px;
-  margin-bottom:20px;
-  text-align:center;
+font-size:32px;
+margin-bottom:20px;
+text-align:center;
 }
 
 .about-container{
-  display:flex;
-  gap:25px;
+display:flex;
+gap:25px;
 }
 
 .founder-img{
-  width:170px;
-  height:170px;
-  border-radius:50%;
-  border:4px solid black;
-  object-fit:cover;
+width:170px;
+height:170px;
+border-radius:50%;
+border:4px solid black;
+object-fit:cover;
 }
 
 .cards{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:20px;
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:20px;
 }
 
 .card{
-  background:white;
-  padding:20px;
-  border-radius:10px;
-  width:250px;
-  box-shadow:0 2px 10px rgba(0,0,0,0.1);
-  text-align:center;
+background:white;
+padding:20px;
+border-radius:10px;
+width:250px;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+text-align:center;
 }
 
 .card h3{
-  color:#4CAF50;
+color:#4CAF50;
 }
 
 .gallery{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:15px;
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:15px;
 }
 
 .gallery img{
-  width:200px;
-  height:140px;
-  object-fit:cover;
-  border-radius:10px;
-  cursor:pointer;
+width:200px;
+height:140px;
+object-fit:cover;
+border-radius:10px;
+cursor:pointer;
 }
 
 #imageViewer{
@@ -210,33 +208,33 @@ border-radius:10px;
 }
 
 form{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  max-width:500px;
-  margin:auto;
+display:flex;
+flex-direction:column;
+gap:12px;
+max-width:500px;
+margin:auto;
 }
 
 form input,form textarea{
-  padding:10px;
-  border-radius:5px;
-  border:1px solid #ccc;
+padding:10px;
+border-radius:5px;
+border:1px solid #ccc;
 }
 
 form button{
-  padding:12px;
-  border:none;
-  border-radius:5px;
-  background:#4CAF50;
-  color:white;
+padding:12px;
+border:none;
+border-radius:5px;
+background:#4CAF50;
+color:white;
 }
 
 footer{
-  background:#333;
-  color:white;
-  text-align:center;
-  padding:20px;
-  margin-top:40px;
+background:#333;
+color:white;
+text-align:center;
+padding:20px;
+margin-top:40px;
 }
 </style>
 </head>
@@ -266,15 +264,12 @@ footer{
 <li class="login-area">
 
 <div id="loginLi">
-<button class="login-btn" onclick="loginUser()">Login / Register</button>
+<button class="login-btn" onclick="googleLogin()">Login / Register</button>
 </div>
 
 <div id="userArea" style="display:none;">
 <img id="userPhoto" class="user-photo">
-<button onclick="googleLogin()" class="login-btn">
-Login / Register
-</button>
-
+<button onclick="logout()" class="logout-btn">Logout</button>
 </div>
 
 </li>
@@ -288,46 +283,6 @@ Login / Register
 <a href="#contact" class="donate-btn">Donate Now</a>
 </section>
 
-<section id="about">
-<h2>About PREM EDUCATION</h2>
-<div class="about-container">
-<img src="logo.jpg" class="founder-img">
-
-<p>
-PREM EDUCATION is a social initiative started to support poor and underprivileged children by providing them with free education. The aim of this program is to ensure that no child is deprived of learning because of financial difficulties.
-<br><br>
-Each child also receives ₹500 every month to help buy books, notebooks, and learning resources.
-<br><br>
-<strong>Founder:</strong> Sadhu Maharaj<br>
-<strong>Director:</strong> Sadhvi
-</p>
-
-</div>
-</section>
-
-<section id="courses">
-<h2>Our Courses</h2>
-
-<div class="cards">
-
-<div class="card">
-<h3>Computer Class</h3>
-<p>Learn computer basics and programming.</p>
-</div>
-
-<div class="card">
-<h3>English Class</h3>
-<p>Improve spoken and written English.</p>
-</div>
-
-<div class="card">
-<h3>Yoga Class</h3>
-<p>Practice yoga for healthy life.</p>
-</div>
-
-</div>
-</section>
-
 <section id="gallery">
 <h2>Our Gallery</h2>
 
@@ -336,17 +291,6 @@ Each child also receives ₹500 every month to help buy books, notebooks, and le
 <img src="mandir1.jpg" onclick="openImage(this)">
 <img src="mandir2.jpg" onclick="openImage(this)">
 <img src="mandir3.jpg" onclick="openImage(this)">
-<img src="ram.jpg" onclick="openImage(this)">
-<img src="ram1.jpg" onclick="openImage(this)">
-<img src="ram2.jpg" onclick="openImage(this)">
-<img src="ram3.jpg" onclick="openImage(this)">
-<img src="ram4.jpg" onclick="openImage(this)">
-<img src="ram5.jpg" onclick="openImage(this)">
-<img src="ram6.jpg" onclick="openImage(this)">
-<img src="ram7.jpg" onclick="openImage(this)">
-<img src="ram8.jpg" onclick="openImage(this)">
-<img src="ram9.jpg" onclick="openImage(this)">
-<img src="ram10.jpg" onclick="openImage(this)">
 </div>
 
 <div id="imageViewer" onclick="closeImage()">
@@ -355,37 +299,12 @@ Each child also receives ₹500 every month to help buy books, notebooks, and le
 
 </section>
 
-<section id="contact">
-
-<h2>Contact Us</h2>
-
-<form action="https://formsubmit.co/rishantbhaumik@gmail.com" method="POST">
-
-<input type="text" name="name" placeholder="Your Name" required>
-
-<input type="email" name="email" placeholder="Your Email" required>
-
-<textarea name="message" rows="5" placeholder="Your Message" required></textarea>
-
-<button type="submit">Send Message</button>
-
-</form>
-
-<p style="margin-top:15px;text-align:center;">
-Or email us directly at:
-<a href="mailto:rishantbhaumik@gmail.com">rishantbhaumik@gmail.com</a>
-</p>
-
-</section>
-
 <footer>
-
 © 2026 PREM EDUCATION  
 <br>
 Founder: Sadhu Maharaj  
 <br>
 Creator: Rishant
-
 </footer>
 
 <script>
@@ -422,7 +341,7 @@ const provider = new GoogleAuthProvider();
 window.googleLogin = function(){
 
 signInWithPopup(auth, provider)
-.then((result)=>{
+.then(()=>{
 alert("Login Successful");
 })
 .catch((error)=>{
@@ -434,8 +353,6 @@ console.log(error);
 window.logout = function(){
 signOut(auth);
 }
-
-</script>
 
 onAuthStateChanged(auth,(user)=>{
 
@@ -458,7 +375,3 @@ document.getElementById("userArea").style.display="none";
 
 </body>
 </html>
-
-
-
-
