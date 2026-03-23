@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Prem Education Attendance</title>
+  <link rel="icon" type="image/jpg" href="logo.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body{
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      margin:0;
+      padding:0;
+      text-align:center;
+    }
+
+    h1{
+      color:white;
+      margin:20px;
+      font-size:32px;
+    }
+
+    .container{
+      background:white;
+      width:95%;
+      max-width:1000px;
+      margin:auto;
+      padding:25px;
+      border-radius:15px;
+      box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    input{
+      padding:12px;
+      margin:8px;
+      border-radius:8px;
+      border:1px solid #ccc;
+      font-size:16px;
+    }
+
+    button{
+      padding:10px 15px;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      margin:5px;
+      font-size:15px;
+    }
+
+    .addBtn{ background:#28a745; color:white; }
+    .present{ background:#28a745; color:white; }
+    .absent{ background:#dc3545; color:white; }
+    .delete{ background:#ff9800; color:white; }
+    .send{ background:#007bff; color:white; width:100%; font-size:18px; }
+
+    table{
+      width:100%;
+      margin-top:20px;
+      border-collapse: collapse;
+    }
+
+    th{
+      background:#007bff;
+      color:white;
+      padding:12px;
+      font-size:18px;
+    }
+
+    td{
+      padding:12px;
+      border-bottom:1px solid #ddd;
+      font-size:16px;
+    }
+
+    img{
+      width:60px;
+      height:60px;
+      border-radius:50%;
+      object-fit:cover;
+      border:2px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+
+<h1>📘 Prem Education Attendance</h1>
+
+<div class="container">
+
+  <input id="name" placeholder="Student Name">
+  <input type="file" id="photo" accept="image/*">
+  <br>
+  <button class="addBtn" onclick="addStudent()">➕ Add Student</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Photo</th>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="data"></tbody>
+  </table>
+
+  <button class="send" onclick="sendEmail()">📩 Send to Gmail</button>
+
+</div>
+
+<script>
+let students = JSON.parse(localStorage.getItem("students")) || [];
+
+function addStudent(){
+  let name = document.getElementById("name").value.trim();
+  let file = document.getElementById("photo").files[0];
+
+  if(name=="") return alert("Enter student name");
+
+  if(file){
+    let reader = new FileReader();
+    reader.onload = function(e){
+      saveStudent(name, e.target.result);
+    }
+    reader.readAsDataURL(file);
+  } else {
+    saveStudent(name, "");
+  }
+}
+
+function saveStudent(name, photo){
+  students.push({name, photo, status:"Not Marked"});
+  localStorage.setItem("students", JSON.stringify(students));
+
+  document.getElementById("name").value="";
+  document.getElementById("photo").value="";
+  show();
+}
+
+function setStatus(i, status){
+  students[i].status = status;
+  localStorage.setItem("students", JSON.stringify(students));
+  show();
+}
+
+function deleteStudent(i){
+  if(confirm("Delete this student?")){
+    students.splice(i,1);
+    localStorage.setItem("students", JSON.stringify(students));
+    show();
+  }
+}
+
+function show(){
+  let data = document.getElementById("data");
+  data.innerHTML="";
+
+  students.forEach((s,i)=>{
+    let photo = s.photo || "https://via.placeholder.com/60";
+
+    data.innerHTML += `
+      <tr>
+        <td><img src="${photo}"></td>
+        <td>${s.name}</td>
+        <td>${s.status}</td>
+        <td>
+          <button class="present" onclick="setStatus(${i}, 'Present')">✔</button>
+          <button class="absent" onclick="setStatus(${i}, 'Absent')">❌</button>
+          <button class="delete" onclick="deleteStudent(${i})">🗑</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function sendEmail(){
+  let text = "📘 Prem Education Attendance Report\n\n";
+
+  students.forEach(s=>{
+    text += s.name + " - " + s.status + "\\n";
+  });
+
+  let url = "https://mail.google.com/mail/?view=cm&fs=1"
+          + "&to=rishantbhaumik@gmail.com"
+          + "&su=Prem Education Attendance Report"
+          + "&body=" + encodeURIComponent(text);
+
+  window.open(url, "_blank");
+}
+
+show();
+</script>
+
+</body>
+</html>
