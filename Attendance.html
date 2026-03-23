@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Prem Education Attendance</title>
+
   <link rel="icon" type="image/jpg" href="logo.jpg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -17,7 +18,6 @@
     h1{
       color:white;
       margin:20px;
-      font-size:32px;
     }
 
     .container{
@@ -28,30 +28,37 @@
       padding:25px;
       border-radius:15px;
       box-shadow:0 10px 25px rgba(0,0,0,0.2);
+      display:none;
+    }
+
+    .loginBox{
+      background:white;
+      width:300px;
+      margin:100px auto;
+      padding:20px;
+      border-radius:10px;
     }
 
     input{
-      padding:12px;
-      margin:8px;
+      padding:10px;
+      margin:5px;
       border-radius:8px;
       border:1px solid #ccc;
-      font-size:16px;
     }
 
     button{
-      padding:10px 15px;
+      padding:10px;
       border:none;
       border-radius:8px;
       cursor:pointer;
       margin:5px;
-      font-size:15px;
     }
 
     .addBtn{ background:#28a745; color:white; }
     .present{ background:#28a745; color:white; }
     .absent{ background:#dc3545; color:white; }
     .delete{ background:#ff9800; color:white; }
-    .send{ background:#007bff; color:white; width:100%; font-size:18px; }
+    .send{ background:#007bff; color:white; width:100%; }
 
     table{
       width:100%;
@@ -62,14 +69,12 @@
     th{
       background:#007bff;
       color:white;
-      padding:12px;
-      font-size:18px;
+      padding:10px;
     }
 
     td{
-      padding:12px;
+      padding:10px;
       border-bottom:1px solid #ddd;
-      font-size:16px;
     }
 
     img{
@@ -77,19 +82,25 @@
       height:60px;
       border-radius:50%;
       object-fit:cover;
-      border:2px solid #ddd;
     }
   </style>
 </head>
 <body>
 
-<h1>📘 Prem Education Attendance</h1>
+<!-- 🔐 LOGIN SCREEN -->
+<div class="loginBox" id="loginBox">
+  <h2>Enter Password</h2>
+  <input type="password" id="pass" placeholder="Password"><br>
+  <button onclick="checkPass()">Login</button>
+</div>
 
-<div class="container">
+<!-- 📘 MAIN APP -->
+<h1 id="title" style="display:none;">📘 Prem Education Attendance</h1>
+
+<div class="container" id="app">
 
   <input id="name" placeholder="Student Name">
-  <input type="file" id="photo" accept="image/*">
-  <br>
+  <input type="file" id="photo" accept="image/*"><br>
   <button class="addBtn" onclick="addStudent()">➕ Add Student</button>
 
   <table>
@@ -109,6 +120,21 @@
 </div>
 
 <script>
+
+// 🔐 PASSWORD CHECK
+function checkPass(){
+  let p = document.getElementById("pass").value.trim();
+
+  if(p === "RADHA"){
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    document.getElementById("title").style.display = "block";
+  } else {
+    alert("Wrong Password");
+  }
+}
+
+// 📊 DATA SYSTEM
 let students = JSON.parse(localStorage.getItem("students")) || [];
 
 function addStudent(){
@@ -189,6 +215,7 @@ function sendEmail(){
 }
 
 show();
+
 </script>
 
 </body>
