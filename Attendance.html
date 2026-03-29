@@ -1,218 +1,310 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Prem Education Attendance</title>
+<title>Prem Education Attendance</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="icon" type="image/jpg" href="logo.jpg">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+margin:0;
+font-family:Arial;
+background: radial-gradient(circle,#0f2027,#203a43,#2c5364);
+}
 
-  <style>
-    body{
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      margin:0;
-      text-align:center;
-    }
+/* 🔄 LOADER */
+#loader{
+position:fixed;
+width:100%;
+height:100%;
+background:black;
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:999;
+flex-direction:column;
+color:#00fff7;
+}
 
-    h1{ color:white; margin:20px; }
+.spinner{
+width:60px;
+height:60px;
+border:5px solid #222;
+border-top:5px solid #00fff7;
+border-radius:50%;
+animation:spin 1s linear infinite;
+}
 
-    .container{
-      background:white;
-      width:95%;
-      max-width:1000px;
-      margin:auto;
-      padding:20px;
-      border-radius:15px;
-      display:none;
-    }
+@keyframes spin{
+100%{transform:rotate(360deg);}
+}
 
-    .loginBox{
-      background:white;
-      width:300px;
-      margin:100px auto;
-      padding:20px;
-      border-radius:10px;
-    }
+.hide{animation:fadeOut 1s forwards;}
+@keyframes fadeOut{to{opacity:0;visibility:hidden;}}
 
-    input{ padding:10px; margin:5px; border-radius:8px; }
+h1{text-align:center;color:#00fff7;margin:10px;}
 
-    button{
-      padding:8px 12px;
-      border:none;
-      border-radius:8px;
-      margin:5px;
-      cursor:pointer;
-    }
+.loginBox{
+background:#111;
+color:white;
+width:90%;
+max-width:320px;
+margin:80px auto;
+padding:20px;
+border-radius:12px;
+text-align:center;
+}
 
-    .addBtn{background:#28a745;color:white;}
-    .present{background:#28a745;color:white;}
-    .absent{background:#dc3545;color:white;}
-    .delete{background:#ff9800;color:white;}
-    .send{background:#007bff;color:white;width:100%;}
+input{
+width:90%;
+padding:12px;
+margin:10px 0;
+border-radius:6px;
+border:none;
+}
 
-    table{width:100%; margin-top:20px; border-collapse:collapse;}
-    th{background:#007bff;color:white;padding:10px;}
-    td{padding:10px;border-bottom:1px solid #ddd;}
+.container{
+background:#111;
+width:95%;
+margin:10px auto;
+padding:10px;
+border-radius:12px;
+display:none;
+}
 
-    img{
-      width:60px;height:60px;border-radius:50%;
-      object-fit:cover;
-    }
-  </style>
+h2{
+background:#00fff7;
+color:black;
+padding:8px;
+border-radius:6px;
+}
+
+.card{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#1a1a1a;
+padding:10px;
+margin:10px 0;
+border-radius:10px;
+flex-wrap:wrap;
+}
+
+.left{display:flex;align-items:center;gap:10px;}
+
+.photoBox{
+width:50px;height:50px;border-radius:50%;
+background:#333;display:flex;
+justify-content:center;align-items:center;
+color:#00fff7;font-size:22px;
+cursor:pointer;overflow:hidden;
+}
+
+.photoBox img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.name{color:white;font-weight:bold;}
+.status{color:#aaa;font-size:12px;}
+
+.btns{display:flex;gap:5px;}
+
+button{
+padding:6px 10px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+.present{background:green;color:white;}
+.absent{background:red;color:white;}
+.leave{background:orange;color:white;}
+
+.send{
+display:none;
+width:90%;
+margin:10px auto;
+padding:12px;
+background:#00fff7;
+color:black;
+border-radius:8px;
+}
+</style>
 </head>
+
 <body>
 
-<!-- 🔐 LOGIN -->
+<!-- 🔄 LOADER -->
+<div id="loader">
+<div class="spinner"></div>
+<div>Loading Prem Education...</div>
+</div>
+
 <div class="loginBox" id="loginBox">
-  <h2>Password</h2>
-  <input type="password" id="pass">
-  <button onclick="checkPass()">Login</button>
+<h2>Password</h2>
+<input type="password" id="pass">
+<button onclick="checkPass()">Login</button>
 </div>
 
 <h1 id="title" style="display:none;">📘 Prem Education Attendance</h1>
 
-<div class="container" id="app">
+<div class="container" id="g1box"><h2>Group 1</h2><div id="g1"></div></div>
+<div class="container" id="g2box"><h2>Group 2</h2><div id="g2"></div></div>
+<div class="container" id="g3box"><h2>Group 3</h2><div id="g3"></div></div>
 
-  <input id="name" placeholder="Student Name">
-  <input type="file" id="photo"><br>
-  <button class="addBtn" onclick="addStudent()">Add Student</button>
+<button class="send" id="sendBtn" onclick="sendEmail()">📩 Gmail</button>
+<button class="send" id="excelBtn" onclick="downloadExcel()">📥 Excel</button>
+<button class="send" id="waBtn" onclick="sendWhatsApp()">📲 WhatsApp</button>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Photo</th>
-        <th>Name</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody id="data"></tbody>
-  </table>
+<script>
 
-  <button class="send" onclick="sendEmail()">Send to Gmail</button>
-
-</div>
-
-<!-- 🔥 FIREBASE -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  doc
-} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyClp4QXNcw2UWHBhuNZGH1_EwWILKChUvQ",
-  authDomain: "prem-attendance-123.firebaseapp.com",
-  projectId: "prem-attendance-123",
-  storageBucket: "prem-attendance-123.firebasestorage.app",
-  messagingSenderId: "712918044193",
-  appId: "1:712918044193:web:7cea3e9ae897f4efd65d60"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const colRef = collection(db, "students");
+// 🔄 LOADER HIDE
+setTimeout(()=>{
+document.getElementById("loader").classList.add("hide");
+},2000);
 
 // 🔐 PASSWORD
-window.checkPass = function(){
-  let p = document.getElementById("pass").value;
-  if(p==="RADHA"){
-    document.getElementById("loginBox").style.display="none";
-    document.getElementById("app").style.display="block";
-    document.getElementById("title").style.display="block";
-    show();
-  } else alert("Wrong Password");
-};
-
-// ➕ ADD
-window.addStudent = async function(){
-  let name = document.getElementById("name").value.trim();
-  let file = document.getElementById("photo").files[0];
-
-  if(!name) return alert("Enter name");
-
-  let photo = "";
-
-  if(file){
-    const reader = new FileReader();
-    reader.onload = async function(e){
-      await addDoc(colRef, {
-        name,
-        photo:e.target.result,
-        status:"Not Marked"
-      });
-      show();
-    };
-    reader.readAsDataURL(file);
-  } else {
-    await addDoc(colRef, {name, photo:"", status:"Not Marked"});
-    show();
-  }
-};
-
-// 📊 SHOW
-async function show(){
-  let data = document.getElementById("data");
-  data.innerHTML="";
-
-  const snapshot = await getDocs(colRef);
-
-  snapshot.forEach(docSnap=>{
-    let s = docSnap.data();
-    let id = docSnap.id;
-
-    data.innerHTML += `
-      <tr>
-        <td><img src="${s.photo || 'https://via.placeholder.com/60'}"></td>
-        <td>${s.name}</td>
-        <td>${s.status}</td>
-        <td>
-          <button onclick="updateStatus('${id}','Present')">✔</button>
-          <button onclick="updateStatus('${id}','Absent')">❌</button>
-          <button onclick="deleteStudent('${id}')">🗑</button>
-        </td>
-      </tr>
-    `;
-  });
+function checkPass(){
+if(pass.value==="RADHA"){
+loginBox.style.display="none";
+title.style.display="block";
+g1box.style.display="block";
+g2box.style.display="block";
+g3box.style.display="block";
+sendBtn.style.display="block";
+excelBtn.style.display="block";
+waBtn.style.display="block";
+}else{alert("Wrong Password");}
 }
 
-// ✔ STATUS
-window.updateStatus = async function(id, status){
-  await updateDoc(doc(db,"students",id),{status});
-  show();
-};
+// ✅ FULL STUDENT LIST
 
-// ❌ DELETE
-window.deleteStudent = async function(id){
-  await deleteDoc(doc(db,"students",id));
-  show();
-};
+let group1=[
+"Kushi","Diksha","Komal","Ayushi","Madhawi","Rudra","Trisha","Dev","Bhola","Aryush","Lakmi","Pooja"
+].map(n=>({name:n,status:"Not Marked"}));
+
+let group2=[
+"Mohini","Gauri","Kush","Radhika","Aaryan","Rohit","Shorya","Manish","Sandeep","Rishant","Pragati"
+].map(n=>({name:n,status:"Not Marked"}));
+
+let group3=[
+"Ridhima","Kishori","Anjali S.","Lakki","Anjali K.","Sakshi","Vani","Love","Renu","Shiv","Kuldeep","Ganesh","Lakshe"
+].map(n=>({name:n,status:"Not Marked"}));
+
+// 🔁 LOAD SAVED DATA
+if(localStorage.getItem("attendanceData")){
+let saved=JSON.parse(localStorage.getItem("attendanceData"));
+group1=saved.g1;
+group2=saved.g2;
+group3=saved.g3;
+}
+
+// 💾 SAVE
+function save(){
+localStorage.setItem("attendanceData",JSON.stringify({
+g1:group1,g2:group2,g3:group3
+}));
+}
+
+// ✅ STATUS
+function setStatus(g,i,s){
+g[i].status=s;
+save();
+show();
+}
+
+// 📸 PHOTO UPLOAD
+function uploadPhoto(input,g,i){
+let file=input.files[0];
+if(file){
+let reader=new FileReader();
+reader.onload=function(e){
+g[i].photo=e.target.result;
+save();
+show();
+}
+reader.readAsDataURL(file);
+}
+}
+
+// UI RENDER
+function show(){
+render(group1,"g1",1);
+render(group2,"g2",2);
+render(group3,"g3",3);
+}
+
+function render(g,id,no){
+let box=document.getElementById(id);
+box.innerHTML="";
+
+g.forEach((s,i)=>{
+box.innerHTML+=`
+<div class="card">
+
+<div class="left">
+<label class="photoBox">
+${s.photo?`<img src="${s.photo}">`:"➕"}
+<input type="file" accept="image/*" style="display:none"
+onchange="uploadPhoto(this,group${no},${i})">
+</label>
+
+<div>
+<div class="name">${s.name}</div>
+<div class="status">${s.status}</div>
+</div>
+</div>
+
+<div class="btns">
+<button class="present" onclick="setStatus(group${no},${i},'Present')">✔</button>
+<button class="absent" onclick="setStatus(group${no},${i},'Absent')">❌</button>
+<button class="leave" onclick="setStatus(group${no},${i},'Leave')">🟡</button>
+</div>
+
+</div>`;
+});
+}
+
+// 📲 WHATSAPP
+function sendWhatsApp(){
+let text="Attendance\n\n";
+[group1,group2,group3].forEach((g,i)=>{
+g.forEach(s=>text+=`Group${i+1} - ${s.name} - ${s.status}\n`);
+});
+window.open("https://wa.me/918077704442?text="+encodeURIComponent(text));
+}
 
 // 📩 EMAIL
-window.sendEmail = function(){
-  let text = "Prem Education Attendance\n\n";
-  document.querySelectorAll("#data tr").forEach(row=>{
-    let name = row.children[1].innerText;
-    let status = row.children[2].innerText;
-    text += name+" - "+status+"\n";
-  });
+function sendEmail(){
+let text="Attendance\n\n";
+[group1,group2,group3].forEach((g,i)=>{
+g.forEach(s=>text+=`Group${i+1} - ${s.name} - ${s.status}\n`);
+});
+window.open("https://mail.google.com/mail/?view=cm&fs=1&to=rishantbhaumik@gmail.com&body="+encodeURIComponent(text));
+}
 
-  let url = "https://mail.google.com/mail/?view=cm&fs=1"
-    + "&to=rishantbhaumik@gmail.com"
-    + "&su=Attendance"
-    + "&body="+encodeURIComponent(text);
+// 📥 EXCEL
+function downloadExcel(){
+let date=new Date().toLocaleDateString();
+let csv="Date,Group,Name,Status\n";
 
-  window.open(url);
-};
+[group1,group2,group3].forEach((g,i)=>{
+g.forEach(s=>{
+csv+=`${date},Group${i+1},${s.name},${s.status}\n`;
+});
+});
+
+let blob=new Blob([csv]);
+let a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="attendance.csv";
+a.click();
+}
+
+// INIT
+show();
 
 </script>
-
 </body>
 </html>
