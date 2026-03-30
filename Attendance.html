@@ -11,7 +11,6 @@ font-family:Arial;
 background: radial-gradient(circle,#0f2027,#203a43,#2c5364);
 }
 
-/* 🔄 LOADER */
 #loader{
 position:fixed;
 width:100%;
@@ -135,7 +134,6 @@ border-radius:8px;
 
 <body>
 
-<!-- 🔄 LOADER -->
 <div id="loader">
 <div class="spinner"></div>
 <div>Loading Prem Education...</div>
@@ -159,12 +157,12 @@ border-radius:8px;
 
 <script>
 
-// 🔄 LOADER HIDE
+// LOADER
 setTimeout(()=>{
 document.getElementById("loader").classList.add("hide");
 },2000);
 
-// 🔐 PASSWORD
+// PASSWORD
 function checkPass(){
 if(pass.value==="RADHA"){
 loginBox.style.display="none";
@@ -178,8 +176,7 @@ waBtn.style.display="block";
 }else{alert("Wrong Password");}
 }
 
-// ✅ FULL STUDENT LIST
-
+// GROUP DATA
 let group1=[
 "Kushi","Diksha","Komal","Ayushi","Madhawi","Rudra","Trisha","Dev","Bhola","Aryush","Lakmi","Pooja"
 ].map(n=>({name:n,status:"Not Marked"}));
@@ -192,7 +189,7 @@ let group3=[
 "Ridhima","Kishori","Anjali S.","Lakki","Anjali K.","Sakshi","Vani","Love","Renu","Shiv","Kuldeep","Ganesh","Lakshe"
 ].map(n=>({name:n,status:"Not Marked"}));
 
-// 🔁 LOAD SAVED DATA
+// LOAD SAVE
 if(localStorage.getItem("attendanceData")){
 let saved=JSON.parse(localStorage.getItem("attendanceData"));
 group1=saved.g1;
@@ -200,35 +197,44 @@ group2=saved.g2;
 group3=saved.g3;
 }
 
-// 💾 SAVE
+// SAVE
 function save(){
 localStorage.setItem("attendanceData",JSON.stringify({
 g1:group1,g2:group2,g3:group3
 }));
 }
 
-// ✅ STATUS
+// STATUS
 function setStatus(g,i,s){
 g[i].status=s;
 save();
 show();
 }
 
-// 📸 PHOTO UPLOAD
+// 🔥 FIXED PHOTO FUNCTION
 function uploadPhoto(input,g,i){
-let file=input.files[0];
-if(file){
-let reader=new FileReader();
-reader.onload=function(e){
-g[i].photo=e.target.result;
-save();
-show();
-}
-reader.readAsDataURL(file);
-}
+  let file = input.files[0];
+
+  if(file){
+    let reader = new FileReader();
+
+    reader.onload = function(e){
+      g[i].photo = e.target.result;
+      save();
+
+      // FIX
+      setTimeout(()=>{
+        show();
+      },50);
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  input.value = "";
 }
 
-// UI RENDER
+// SHOW
 function show(){
 render(group1,"g1",1);
 render(group2,"g2",2);
@@ -242,14 +248,12 @@ box.innerHTML="";
 g.forEach((s,i)=>{
 box.innerHTML+=`
 <div class="card">
-
 <div class="left">
 <label class="photoBox">
 ${s.photo?`<img src="${s.photo}">`:"➕"}
 <input type="file" accept="image/*" style="display:none"
 onchange="uploadPhoto(this,group${no},${i})">
 </label>
-
 <div>
 <div class="name">${s.name}</div>
 <div class="status">${s.status}</div>
@@ -261,40 +265,29 @@ onchange="uploadPhoto(this,group${no},${i})">
 <button class="absent" onclick="setStatus(group${no},${i},'Absent')">❌</button>
 <button class="leave" onclick="setStatus(group${no},${i},'Leave')">🟡</button>
 </div>
-
 </div>`;
 });
 }
 
-// 📲 WHATSAPP
+// WHATSAPP
 function sendWhatsApp(){
-let text="Attendance\n\n";
-[group1,group2,group3].forEach((g,i)=>{
-g.forEach(s=>text+=`Group${i+1} - ${s.name} - ${s.status}\n`);
-});
-window.open("https://wa.me/918077704442?text="+encodeURIComponent(text));
+let t="Attendance\n\n";
+[group1,group2,group3].forEach((g,i)=>g.forEach(s=>t+=`Group${i+1}-${s.name}-${s.status}\n`));
+window.open("https://wa.me/918077704442?text="+encodeURIComponent(t));
 }
 
-// 📩 EMAIL
+// EMAIL
 function sendEmail(){
-let text="Attendance\n\n";
-[group1,group2,group3].forEach((g,i)=>{
-g.forEach(s=>text+=`Group${i+1} - ${s.name} - ${s.status}\n`);
-});
-window.open("https://mail.google.com/mail/?view=cm&fs=1&to=rishantbhaumik@gmail.com&body="+encodeURIComponent(text));
+let t="Attendance\n\n";
+[group1,group2,group3].forEach((g,i)=>g.forEach(s=>t+=`Group${i+1}-${s.name}-${s.status}\n`));
+window.open("https://mail.google.com/mail/?view=cm&fs=1&to=rishantbhaumik@gmail.com&body="+encodeURIComponent(t));
 }
 
-// 📥 EXCEL
+// EXCEL
 function downloadExcel(){
-let date=new Date().toLocaleDateString();
+let d=new Date().toLocaleDateString();
 let csv="Date,Group,Name,Status\n";
-
-[group1,group2,group3].forEach((g,i)=>{
-g.forEach(s=>{
-csv+=`${date},Group${i+1},${s.name},${s.status}\n`;
-});
-});
-
+[group1,group2,group3].forEach((g,i)=>g.forEach(s=>csv+=`${d},Group${i+1},${s.name},${s.status}\n`));
 let blob=new Blob([csv]);
 let a=document.createElement("a");
 a.href=URL.createObjectURL(blob);
@@ -302,7 +295,6 @@ a.download="attendance.csv";
 a.click();
 }
 
-// INIT
 show();
 
 </script>
