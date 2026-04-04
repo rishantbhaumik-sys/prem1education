@@ -7,15 +7,16 @@
 <style>
 body{
 margin:0;
-font-family:Arial;
-background: radial-gradient(circle,#0f2027,#203a43,#2c5364);
+font-family: 'Segoe UI', sans-serif;
+background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
 }
 
 #loader{
 position:fixed;
 width:100%;
 height:100%;
-background:black;
+background:#000;
 display:flex;
 justify-content:center;
 align-items:center;
@@ -25,10 +26,10 @@ color:#00fff7;
 }
 
 .spinner{
-width:60px;
-height:60px;
-border:5px solid #222;
-border-top:5px solid #00fff7;
+width:70px;
+height:70px;
+border:6px solid #222;
+border-top:6px solid #00fff7;
 border-radius:50%;
 animation:spin 1s linear infinite;
 }
@@ -40,16 +41,16 @@ animation:spin 1s linear infinite;
 .hide{animation:fadeOut 1s forwards;}
 @keyframes fadeOut{to{opacity:0;visibility:hidden;}}
 
-h1{text-align:center;color:#00fff7;margin:10px;}
+h1{text-align:center;color:#00fff7;margin:15px;}
 
 .loginBox{
-background:#111;
-color:white;
+background:rgba(255,255,255,0.05);
+backdrop-filter: blur(10px);
 width:90%;
 max-width:320px;
-margin:80px auto;
-padding:20px;
-border-radius:12px;
+margin:100px auto;
+padding:25px;
+border-radius:15px;
 text-align:center;
 }
 
@@ -57,16 +58,26 @@ input{
 width:90%;
 padding:12px;
 margin:10px 0;
-border-radius:6px;
+border-radius:8px;
 border:none;
+background:#222;
+color:white;
+}
+
+button{
+padding:10px;
+border:none;
+border-radius:8px;
+cursor:pointer;
 }
 
 .container{
-background:#111;
+background:rgba(255,255,255,0.05);
+backdrop-filter: blur(10px);
 width:95%;
-margin:10px auto;
+margin:15px auto;
 padding:10px;
-border-radius:12px;
+border-radius:15px;
 display:none;
 }
 
@@ -74,7 +85,7 @@ h2{
 background:#00fff7;
 color:black;
 padding:8px;
-border-radius:6px;
+border-radius:8px;
 }
 
 .card{
@@ -82,20 +93,24 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 background:#1a1a1a;
-padding:10px;
+padding:12px;
 margin:10px 0;
-border-radius:10px;
-flex-wrap:wrap;
+border-radius:12px;
 }
 
-.left{display:flex;align-items:center;gap:10px;}
+.left{
+display:flex;
+align-items:center;
+gap:10px;
+}
 
 .photoBox{
-width:50px;height:50px;border-radius:50%;
-background:#333;display:flex;
-justify-content:center;align-items:center;
-color:#00fff7;font-size:22px;
-cursor:pointer;overflow:hidden;
+width:55px;
+height:55px;
+border-radius:50%;
+overflow:hidden;
+border:2px solid #00fff7;
+cursor:pointer;
 }
 
 .photoBox img{
@@ -104,31 +119,30 @@ height:100%;
 object-fit:cover;
 }
 
-.name{color:white;font-weight:bold;}
-.status{color:#aaa;font-size:12px;}
+.name{font-weight:bold;}
+.status{font-size:12px;color:#aaa;}
 
 .btns{display:flex;gap:5px;}
 
-button{
-padding:6px 10px;
-border:none;
-border-radius:6px;
-cursor:pointer;
-}
-
-.present{background:green;color:white;}
-.absent{background:red;color:white;}
-.leave{background:orange;color:white;}
+.present{background:#00c853;}
+.absent{background:#d50000;}
+.leave{background:#ff9800;}
 
 .send{
 display:none;
 width:90%;
 margin:10px auto;
 padding:12px;
-background:#00fff7;
-color:black;
-border-radius:8px;
+border-radius:10px;
+font-weight:bold;
+cursor:pointer;
+border:none;
 }
+
+#sendBtn{background:#00fff7;color:black;}
+#excelBtn{background:#4caf50;}
+#waBtn{background:#25D366;}
+
 </style>
 </head>
 
@@ -157,12 +171,10 @@ border-radius:8px;
 
 <script>
 
-// LOADER
 setTimeout(()=>{
 document.getElementById("loader").classList.add("hide");
-},2000);
+},1500);
 
-// PASSWORD
 function checkPass(){
 if(pass.value==="RADHA"){
 loginBox.style.display="none";
@@ -176,65 +188,46 @@ waBtn.style.display="block";
 }else{alert("Wrong Password");}
 }
 
-// GROUP DATA
-let group1=[
-"Kushi","Diksha","Komal","Ayushi","Madhawi","Rudra","Trisha","Dev","Bhola","Aryush","Lakmi","Pooja"
-].map(n=>({name:n,status:"Not Marked"}));
+// 🔥 DEFAULT IMAGE ADDED
+let defaultImg = "t.png";
 
-let group2=[
-"Mohini","Gauri","Kush","Radhika","Aaryan","Rohit","Shorya","Manish","Sandeep","Rishant","Pragati"
-].map(n=>({name:n,status:"Not Marked"}));
-
-let group3=[
-"Ridhima","Kishori","Anjali S.","Lakki","Anjali K.","Sakshi","Vani","Love","Renu","Shiv","Kuldeep","Ganesh","Lakshe"
-].map(n=>({name:n,status:"Not Marked"}));
-
-// LOAD SAVE
-if(localStorage.getItem("attendanceData")){
-let saved=JSON.parse(localStorage.getItem("attendanceData"));
-group1=saved.g1;
-group2=saved.g2;
-group3=saved.g3;
+function createGroup(arr){
+return arr.map(n=>({
+name:n,
+status:"Not Marked",
+photo:defaultImg
+}));
 }
 
-// SAVE
+let group1=createGroup(["Kushi","Diksha","Komal","Ayushi","Madhawi","Rudra","Trisha","Dev","Bhola","Aryush","Lakmi","Pooja"]);
+let group2=createGroup(["Mohini","Gauri","Kush","Radhika","Aaryan","Rohit","Shorya","Manish","Sandeep","Rishant","Pragati"]);
+let group3=createGroup(["Ridhima","Kishori","Anjali S.","Lakki","Anjali K.","Sakshi","Vani","Love","Renu","Shiv","Kuldeep","Ganesh","Lakshe"]);
+
 function save(){
 localStorage.setItem("attendanceData",JSON.stringify({
 g1:group1,g2:group2,g3:group3
 }));
 }
 
-// STATUS
 function setStatus(g,i,s){
 g[i].status=s;
 save();
 show();
 }
 
-// 🔥 FIXED PHOTO FUNCTION
 function uploadPhoto(input,g,i){
-  let file = input.files[0];
-
-  if(file){
-    let reader = new FileReader();
-
-    reader.onload = function(e){
-      g[i].photo = e.target.result;
-      save();
-
-      // FIX
-      setTimeout(()=>{
-        show();
-      },50);
-    };
-
-    reader.readAsDataURL(file);
-  }
-
-  input.value = "";
+let file=input.files[0];
+if(file){
+let reader=new FileReader();
+reader.onload=function(e){
+g[i].photo=e.target.result;
+save();
+show();
+};
+reader.readAsDataURL(file);
+}
 }
 
-// SHOW
 function show(){
 render(group1,"g1",1);
 render(group2,"g2",2);
@@ -244,20 +237,25 @@ render(group3,"g3",3);
 function render(g,id,no){
 let box=document.getElementById(id);
 box.innerHTML="";
-
 g.forEach((s,i)=>{
+let inputId=`file_${no}_${i}`;
+
 box.innerHTML+=`
 <div class="card">
 <div class="left">
-<label class="photoBox">
-${s.photo?`<img src="${s.photo}">`:"➕"}
-<input type="file" accept="image/*" style="display:none"
+
+<div class="photoBox" onclick="document.getElementById('${inputId}').click()">
+<img src="${s.photo}">
+</div>
+
+<input type="file" id="${inputId}" accept="image/*" hidden
 onchange="uploadPhoto(this,group${no},${i})">
-</label>
+
 <div>
 <div class="name">${s.name}</div>
 <div class="status">${s.status}</div>
 </div>
+
 </div>
 
 <div class="btns">
@@ -269,21 +267,18 @@ onchange="uploadPhoto(this,group${no},${i})">
 });
 }
 
-// WHATSAPP
 function sendWhatsApp(){
 let t="Attendance\n\n";
 [group1,group2,group3].forEach((g,i)=>g.forEach(s=>t+=`Group${i+1}-${s.name}-${s.status}\n`));
-window.open("https://wa.me/918077704442?text="+encodeURIComponent(t));
+window.open("https://wa.me/?text="+encodeURIComponent(t));
 }
 
-// EMAIL
 function sendEmail(){
 let t="Attendance\n\n";
 [group1,group2,group3].forEach((g,i)=>g.forEach(s=>t+=`Group${i+1}-${s.name}-${s.status}\n`));
-window.open("https://mail.google.com/mail/?view=cm&fs=1&to=rishantbhaumik@gmail.com&body="+encodeURIComponent(t));
+window.open("https://mail.google.com/mail/?view=cm&fs=1&body="+encodeURIComponent(t));
 }
 
-// EXCEL
 function downloadExcel(){
 let d=new Date().toLocaleDateString();
 let csv="Date,Group,Name,Status\n";
@@ -298,5 +293,6 @@ a.click();
 show();
 
 </script>
+
 </body>
 </html>
