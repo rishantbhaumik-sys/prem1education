@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prem Education</title>
+
+<!-- 🔥 FAVICON -->
+<link rel="icon" type="image/jpg" href="logo.jpg">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{
+background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+}
+
+header{
+padding:20px;text-align:center;font-size:22px;font-weight:700;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(10px);
+}
+
+.card{
+margin:20px;padding:20px;border-radius:20px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(15px);
+box-shadow:0 10px 40px rgba(0,0,0,0.6);
+text-align:center;
+}
+
+.btn{
+margin:6px;padding:10px 18px;border:none;border-radius:25px;
+background:linear-gradient(45deg,#00f7ff,#00c3ff);
+color:black;font-weight:600;cursor:pointer;
+}
+
+/* 🔴 LIVE BADGE */
+.live-badge{
+display:inline-block;
+margin-bottom:10px;
+padding:6px 14px;
+border-radius:20px;
+background:red;
+font-size:12px;
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+50%{opacity:0.4;}
+}
+
+/* 🎬 LIVE TEXT */
+.live-text{
+font-size:14px;
+margin-top:5px;
+animation:pulse 1.5s infinite;
+color:#ff4d4d;
+}
+
+@keyframes pulse{
+0%{transform:scale(1);}
+50%{transform:scale(1.1);}
+100%{transform:scale(1);}
+}
+
+/* 🔥 GLOW BUTTON */
+.live-btn{
+background:linear-gradient(45deg,#ff0000,#ff4d4d);
+color:white;
+animation:glow 1.5s infinite alternate;
+}
+
+@keyframes glow{
+from{box-shadow:0 0 10px red;}
+to{box-shadow:0 0 30px red;}
+}
+
+.bar-bg{background:#333;height:10px;border-radius:10px;margin-top:5px;}
+.bar{height:10px;width:0%;border-radius:10px;transition:0.5s;}
+
+.donate{
+background:linear-gradient(45deg,#ffd700,#ffae00);
+}
+
+/* 💎 POPUP */
+.popup{
+position:fixed;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+background:#00c3ff;
+color:black;
+padding:10px 20px;
+border-radius:20px;
+display:none;
+z-index:999;
+}
+</style>
+</head>
+
+<body>
+
+<header>📚 Prem Education</header>
+
+<div class="popup" id="popup"></div>
+
+<!-- 🎥 LIVE WITH PREM EDUCATION -->
+<div class="card">
+<h3>🎥 Live with Prem Education</h3>
+
+<div class="live-badge">● LIVE</div>
+<div class="live-text" id="liveText">LIVE NOW</div>
+
+<button class="btn live-btn" onclick="joinClass()">Join Now</button>
+</div>
+
+<!-- POLL -->
+<div class="card">
+<h3 id="question">Loading...</h3>
+<div id="options"></div>
+<div style="margin-top:15px;" id="results"></div>
+
+<button class="btn" onclick="removeVote()">❌ Remove My Vote</button>
+</div>
+
+<!-- DONATE -->
+<div class="card">
+<h3>💰 Support Our Mission</h3>
+<button class="btn donate" onclick="donate()">Donate Now</button>
+</div>
+
+<!-- 🔊 SOUND -->
+<audio id="sound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAZclpB5mWBEO4O17_NRBC9X7dxOPtGHok",
+  authDomain: "pree-a.firebaseapp.com",
+  databaseURL: "https://pree-a-default-rtdb.firebaseio.com",
+  projectId: "pree-a"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const currentPoll = "poll1";
+
+const questions = {
+  poll1: {
+    text: "Do you like our free education program?",
+    options: ["Yes","No"]
+  }
+};
+
+const q = questions[currentPoll];
+document.getElementById("question").innerText = q.text;
+
+const optionsDiv = document.getElementById("options");
+const resultsDiv = document.getElementById("results");
+
+q.options.forEach(opt=>{
+  let btn=document.createElement("button");
+  btn.className="btn";
+  btn.innerText=opt;
+  btn.onclick=()=>vote(opt);
+  optionsDiv.appendChild(btn);
+});
+
+function hasVoted(){
+  return localStorage.getItem(currentPoll);
+}
+
+function showPopup(msg){
+  let p=document.getElementById("popup");
+  p.innerText=msg;
+  p.style.display="block";
+  setTimeout(()=>p.style.display="none",2000);
+}
+
+const pollRef = ref(db, currentPoll);
+
+onValue(pollRef, (snap)=>{
+  let data=snap.val()||{};
+  let total=Object.values(data).reduce((a,b)=>a+b,0);
+
+  resultsDiv.innerHTML="";
+
+  q.options.forEach(opt=>{
+    let count=data[opt]||0;
+    let percent=total?Math.round((count/total)*100):0;
+
+    resultsDiv.innerHTML+=`
+      <div>${opt}: ${percent}%</div>
+      <div class="bar-bg">
+        <div class="bar" style="width:${percent}%;background:#00f7ff;"></div>
+      </div>
+    `;
+  });
+});
+
+window.vote=function(opt){
+  if(hasVoted()){
+    showPopup("❌ You already voted");
+    return;
+  }
+
+  runTransaction(pollRef,(data)=>{
+    if(!data) data={};
+    data[opt]=(data[opt]||0)+1;
+    return data;
+  });
+
+  document.getElementById("sound").play();
+  localStorage.setItem(currentPoll,opt);
+
+  showPopup("✅ You voted: "+opt);
+};
+
+window.removeVote=function(){
+  let prev=localStorage.getItem(currentPoll);
+  if(!prev){
+    showPopup("No vote to remove");
+    return;
+  }
+
+  runTransaction(pollRef,(data)=>{
+    if(data && data[prev]){
+      data[prev]--;
+    }
+    return data;
+  });
+
+  localStorage.removeItem(currentPoll);
+  showPopup("❌ Vote removed");
+};
+
+window.joinClass=()=>{
+  window.location.href="https://meet.google.com/fwm-zthf-sei";
+};
+
+window.donate=()=>{
+  window.location.href="upi://pay?pa=yourupi@upi&pn=Prem%20Education&cu=INR";
+};
+
+setInterval(()=>{
+  let t=document.getElementById("liveText");
+  t.innerText = t.innerText === "LIVE NOW" ? "JOIN FAST 🚀" : "LIVE NOW";
+},2000);
+
+</script>
+
+</body>
+</html>
