@@ -3,110 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rishant AI - Private Studio</title>
-    
+    <title>PREM EDUCATION AI</title>
     <link rel="icon" type="image/jpeg" href="logo.jpg">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         [x-cloak] { display: none !important; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
-        .prose pre { background: #111827; color: white; padding: 1.25rem; border-radius: 0.75rem; overflow-x: auto; border: 1px solid #374151; margin: 1rem 0; }
-        .prose code { color: #f472b6; font-family: 'Fira Code', monospace; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
+        .prose pre { background: #111827; padding: 1rem; border-radius: 0.5rem; border: 1px solid #374151; overflow-x: auto; }
+        .prose code { color: #ec4899; font-family: monospace; }
+        .ai-bubble { background: #1e293b; border: 1px solid #334155; }
+        .user-bubble { background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.2); }
     </style>
 </head>
-<body class="bg-[#0f172a] text-gray-100 font-sans" x-data="chatApp()" x-init="init()">
+<body class="bg-[#0f172a] text-gray-200 font-sans" x-data="chatApp()" x-init="init()">
 
     <div class="flex h-screen overflow-hidden">
         
-        <aside class="w-72 bg-[#1e293b] flex-shrink-0 flex flex-col border-r border-gray-800 transition-all duration-300" :class="sidebarOpen ? 'ml-0' : '-ml-72'">
+        <aside class="w-72 bg-[#111827] flex-shrink-0 flex flex-col border-r border-gray-800 transition-all" :class="sidebarOpen ? 'ml-0' : '-ml-72'">
             <div class="p-5 border-b border-gray-800 flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <img src="logo.jpg" alt="Logo" class="w-8 h-8 rounded-lg object-cover border border-gray-700">
-                    <h1 class="font-bold text-lg tracking-tight text-white">Rishant AI</h1>
+                    <img src="logo.jpg" alt="Logo" class="w-8 h-8 rounded shadow-lg object-cover">
+                    <h1 class="font-bold text-xs uppercase tracking-tighter text-blue-400">Prem Education AI</h1>
                 </div>
-                <button @click="createNewChat()" class="p-2 hover:bg-gray-700 rounded-lg border border-gray-700 transition-all active:scale-95">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                </button>
+                <button @click="createNewChat()" class="p-1.5 hover:bg-gray-800 rounded border border-gray-700 text-gray-400">+</button>
             </div>
             
-            <nav class="flex-1 overflow-y-auto p-3 space-y-2">
+            <nav class="flex-1 overflow-y-auto p-3 space-y-1">
                 <template x-for="chat in chatHistory" :key="chat.id">
                     <div @click="loadChat(chat.id)" 
-                         :class="currentChatId === chat.id ? 'bg-blue-600/20 border-blue-500/50 text-white shadow-lg' : 'text-gray-400 border-transparent hover:bg-gray-800'"
-                         class="p-3 rounded-xl cursor-pointer border transition-all flex justify-between items-center group">
-                        <span class="truncate text-sm font-medium" x-text="chat.title || 'New Conversation'"></span>
-                        <button @click.stop="deleteChat(chat.id)" class="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                        </button>
+                         :class="currentChatId === chat.id ? 'bg-blue-600/10 border-blue-500/50 text-white' : 'text-gray-500 border-transparent hover:bg-gray-800/50'"
+                         class="p-3 rounded-lg cursor-pointer border transition-all flex justify-between items-center group">
+                        <span class="truncate text-xs font-medium" x-text="chat.title || 'New Session'"></span>
+                        <button @click.stop="deleteChat(chat.id)" class="opacity-0 group-hover:opacity-100 hover:text-red-400">×</button>
                     </div>
                 </template>
             </nav>
         </aside>
 
-        <main class="flex-1 flex flex-col relative min-w-0 bg-[#0f172a]">
-            <header class="h-16 border-b border-gray-800 flex items-center px-6 justify-between bg-[#0f172a]/80 backdrop-blur-xl z-10">
+        <main class="flex-1 flex flex-col relative min-w-0">
+            <header class="h-14 border-b border-gray-800 flex items-center px-4 justify-between bg-[#0f172a]/50 backdrop-blur-md">
                 <div class="flex items-center gap-4">
-                    <button @click="sidebarOpen = !sidebarOpen" class="p-2 hover:bg-gray-800 rounded-lg transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-                    </button>
-                    <div class="flex flex-col">
-                        <span class="text-[10px] font-bold text-blue-500 uppercase tracking-widest leading-none mb-1">Rishant AI System</span>
-                        <span class="text-xs font-mono text-gray-400" x-text="settings.model"></span>
+                    <button @click="sidebarOpen = !sidebarOpen" class="p-2 hover:bg-gray-800 rounded-lg text-gray-400">☰</button>
+                    <div class="hidden md:block">
+                        <p class="text-[10px] font-bold text-gray-500 uppercase">Status: <span class="text-green-500">Connected</span></p>
                     </div>
                 </div>
-                <img src="logo.jpg" alt="User" class="w-8 h-8 rounded-full border border-blue-500/30">
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-mono text-gray-500 bg-gray-800 px-2 py-1 rounded" x-text="settings.model"></span>
+                </div>
             </header>
 
-            <div class="flex-1 overflow-y-auto p-4 md:p-10 space-y-8" id="chat-container">
-                <div class="max-w-4xl mx-auto space-y-10">
+            <div class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6" id="chat-container">
+                <div class="max-w-3xl mx-auto space-y-8">
                     <template x-for="(msg, index) in messages" :key="index">
-                        <div class="flex gap-6" :class="msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'">
-                            <div class="flex-shrink-0 w-10 h-10 rounded-2xl flex items-center justify-center shadow-xl overflow-hidden border border-gray-700"
-                                 :class="msg.role === 'user' ? 'bg-blue-600' : 'bg-gray-800'">
-                                <template x-if="msg.role === 'user'">
-                                    <span class="text-xs font-bold">ME</span>
-                                </template>
-                                <template x-if="msg.role !== 'user'">
-                                    <img src="logo.jpg" class="w-full h-full object-cover">
-                                </template>
+                        <div class="flex gap-4" :class="msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold border border-gray-700"
+                                 :class="msg.role === 'user' ? 'bg-blue-600 border-blue-500' : 'bg-gray-800'">
+                                <span x-text="msg.role === 'user' ? 'U' : 'AI'"></span>
                             </div>
-                            <div :class="msg.role === 'user' ? 'bg-blue-600/10 border border-blue-500/30' : 'bg-[#1e293b] border border-gray-700'" 
-                                 class="rounded-3xl px-6 py-4 shadow-2xl max-w-[85%]">
-                                <div class="prose prose-invert prose-sm md:prose-base max-w-none" x-html="renderMarkdown(msg.content)"></div>
+                            <div :class="msg.role === 'user' ? 'user-bubble' : 'ai-bubble'" 
+                                 class="rounded-2xl px-5 py-3 max-w-[85%] shadow-sm">
+                                <div class="prose prose-invert prose-sm max-w-none" x-html="renderMarkdown(msg.content)"></div>
                             </div>
                         </div>
                     </template>
                     
-                    <div x-show="loading" class="flex gap-6">
-                        <div class="w-10 h-10 rounded-2xl bg-gray-800 animate-pulse border border-gray-700"></div>
-                        <div class="bg-gray-800 border border-gray-700 rounded-2xl px-6 py-4 flex items-center gap-2">
-                            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-                            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.1s]"></div>
-                            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.2s]"></div>
+                    <div x-show="loading" class="flex gap-4">
+                        <div class="w-8 h-8 rounded-lg bg-gray-800 border border-gray-700 animate-pulse"></div>
+                        <div class="ai-bubble rounded-2xl px-5 py-3 flex gap-1 items-center">
+                            <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></span>
+                            <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                            <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <footer class="p-6">
-                <div class="max-w-4xl mx-auto relative group">
+            <footer class="p-4 md:p-6">
+                <div class="max-w-3xl mx-auto relative">
                     <textarea 
                         x-model="userInput" 
                         @keydown.enter.prevent="if(!$event.shiftKey) sendMessage()"
-                        placeholder="Type your message to Rishant AI..."
-                        class="w-full bg-[#1e293b]/50 border border-gray-700 rounded-3xl px-6 py-5 pr-20 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:bg-[#1e293b] transition-all shadow-2xl resize-none min-h-[70px]"
+                        placeholder="Type a message to Prem Education AI..."
+                        class="w-full bg-gray-800 border border-gray-700 rounded-2xl px-5 py-4 pr-14 focus:outline-none focus:ring-1 focus:ring-blue-500/50 resize-none min-h-[56px] text-sm"
                         rows="1"></textarea>
-                    <button @click="sendMessage()" 
-                            :disabled="loading || !userInput.trim()"
-                            class="absolute right-3 bottom-3 p-4 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 text-white rounded-2xl transition-all shadow-lg active:scale-90">
+                    <button @click="sendMessage()" :disabled="loading" class="absolute right-2 bottom-2 p-2.5 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 text-white rounded-xl transition-all">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
                     </button>
                 </div>
-                <p class="text-[10px] text-center text-gray-600 mt-4 tracking-widest uppercase font-bold">Rishant AI | Private Build</p>
+                <p class="text-[9px] text-center text-gray-600 mt-4 tracking-tighter uppercase font-medium">Prem Education AI System &copy; 2026</p>
             </footer>
         </main>
     </div>
@@ -121,23 +109,31 @@
                 messages: [],
                 chatHistory: [],
                 
+                // --- YOUR NEW API KEY ---
                 settings: {
-                    apiKey: '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', 
+                    apiKey: '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', 
                     model: 'openai/gpt-4o-mini'
                 },
 
                 init() {
-                    const savedHistory = localStorage.getItem('ai_history_v5');
-                    if (savedHistory) this.chatHistory = JSON.parse(savedHistory);
-                    if (this.chatHistory.length > 0) this.loadChat(this.chatHistory[0].id);
-                    else this.createNewChat();
+                    // Purana cache clear karein taaki nayi key refresh ho
+                    const savedHistory = localStorage.getItem('prem_edu_history_v1');
+                    if (savedHistory) {
+                        this.chatHistory = JSON.parse(savedHistory);
+                    }
+
+                    if (this.chatHistory.length > 0) {
+                        this.loadChat(this.chatHistory[0].id);
+                    } else {
+                        this.createNewChat();
+                    }
                 },
 
                 createNewChat() {
                     const id = Date.now().toString();
                     this.currentChatId = id;
                     this.messages = [];
-                    this.chatHistory.unshift({ id, title: 'New Conversation', messages: [] });
+                    this.chatHistory.unshift({ id, title: 'New Lesson', messages: [] });
                     this.saveHistory();
                 },
 
@@ -158,6 +154,7 @@
 
                 async sendMessage() {
                     if (!this.userInput.trim() || this.loading) return;
+                    
                     const prompt = this.userInput;
                     this.messages.push({ role: 'user', content: prompt });
                     this.userInput = '';
@@ -166,7 +163,7 @@
 
                     const currentChat = this.chatHistory.find(c => c.id === this.currentChatId);
                     if (currentChat && currentChat.messages.length === 0) {
-                        currentChat.title = prompt.length > 25 ? prompt.substring(0, 25) + '...' : prompt;
+                        currentChat.title = prompt.substring(0, 30);
                     }
 
                     try {
@@ -174,30 +171,46 @@
                             method: "POST",
                             headers: {
                                 "Authorization": `Bearer ${this.settings.apiKey}`,
-                                "Content-Type": "application/json"
+                                "Content-Type": "application/json",
+                                "X-Title": "Prem Education AI"
                             },
                             body: JSON.stringify({
                                 "model": this.settings.model,
                                 "messages": this.messages.map(m => ({ role: m.role, content: m.content }))
                             })
                         });
+
                         const data = await response.json();
-                        if (data.error) throw new Error(data.error.message);
+                        
+                        if (data.error) {
+                            throw new Error(data.error.message || "API Rejected Key");
+                        }
+                        
                         this.messages.push({ role: 'assistant', content: data.choices[0].message.content });
+                        
                         if (currentChat) {
                             currentChat.messages = [...this.messages];
                             this.saveHistory();
                         }
                     } catch (error) {
-                        this.messages.push({ role: 'assistant', content: `❌ **Error:** ${error.message}` });
+                        this.messages.push({ 
+                            role: 'assistant', 
+                            content: `❌ **Connection Error:** ${error.message}\n\n*Solution: Check if OpenRouter key has credits.*` 
+                        });
                     } finally {
                         this.loading = false;
                         this.scrollToBottom();
                     }
                 },
 
-                saveHistory() { localStorage.setItem('ai_history_v5', JSON.stringify(this.chatHistory)); },
-                renderMarkdown(content) { return marked.parse(content); },
+                saveHistory() {
+                    localStorage.setItem('prem_edu_history_v1', JSON.stringify(this.chatHistory));
+                },
+
+                renderMarkdown(content) {
+                    return marked.parse(content);
+                },
+
                 scrollToBottom() {
                     setTimeout(() => {
                         const container = document.getElementById('chat-container');
