@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rishant AI - Private Studio</title>
+    
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+        .prose pre { background: #111827; color: white; padding: 1.25rem; border-radius: 0.75rem; overflow-x: auto; border: 1px solid #374151; margin: 1rem 0; }
+        .prose code { color: #f472b6; font-family: 'Fira Code', monospace; }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-gray-100 font-sans" x-data="chatApp()" x-init="init()">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <aside class="w-72 bg-[#1e293b] flex-shrink-0 flex flex-col border-r border-gray-800 transition-all duration-300" :class="sidebarOpen ? 'ml-0' : '-ml-72'">
+            <div class="p-5 border-b border-gray-800 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <img src="logo.jpg" alt="Logo" class="w-8 h-8 rounded-lg object-cover border border-gray-700">
+                    <h1 class="font-bold text-lg tracking-tight text-white">Rishant AI</h1>
+                </div>
+                <button @click="createNewChat()" class="p-2 hover:bg-gray-700 rounded-lg border border-gray-700 transition-all active:scale-95">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                </button>
+            </div>
+            
+            <nav class="flex-1 overflow-y-auto p-3 space-y-2">
+                <template x-for="chat in chatHistory" :key="chat.id">
+                    <div @click="loadChat(chat.id)" 
+                         :class="currentChatId === chat.id ? 'bg-blue-600/20 border-blue-500/50 text-white shadow-lg' : 'text-gray-400 border-transparent hover:bg-gray-800'"
+                         class="p-3 rounded-xl cursor-pointer border transition-all flex justify-between items-center group">
+                        <span class="truncate text-sm font-medium" x-text="chat.title || 'New Conversation'"></span>
+                        <button @click.stop="deleteChat(chat.id)" class="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </div>
+                </template>
+            </nav>
+        </aside>
+
+        <main class="flex-1 flex flex-col relative min-w-0 bg-[#0f172a]">
+            <header class="h-16 border-b border-gray-800 flex items-center px-6 justify-between bg-[#0f172a]/80 backdrop-blur-xl z-10">
+                <div class="flex items-center gap-4">
+                    <button @click="sidebarOpen = !sidebarOpen" class="p-2 hover:bg-gray-800 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-bold text-blue-500 uppercase tracking-widest leading-none mb-1">Rishant AI System</span>
+                        <span class="text-xs font-mono text-gray-400" x-text="settings.model"></span>
+                    </div>
+                </div>
+                <img src="logo.jpg" alt="User" class="w-8 h-8 rounded-full border border-blue-500/30">
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-4 md:p-10 space-y-8" id="chat-container">
+                <div class="max-w-4xl mx-auto space-y-10">
+                    <template x-for="(msg, index) in messages" :key="index">
+                        <div class="flex gap-6" :class="msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-2xl flex items-center justify-center shadow-xl overflow-hidden border border-gray-700"
+                                 :class="msg.role === 'user' ? 'bg-blue-600' : 'bg-gray-800'">
+                                <template x-if="msg.role === 'user'">
+                                    <span class="text-xs font-bold">ME</span>
+                                </template>
+                                <template x-if="msg.role !== 'user'">
+                                    <img src="logo.jpg" class="w-full h-full object-cover">
+                                </template>
+                            </div>
+                            <div :class="msg.role === 'user' ? 'bg-blue-600/10 border border-blue-500/30' : 'bg-[#1e293b] border border-gray-700'" 
+                                 class="rounded-3xl px-6 py-4 shadow-2xl max-w-[85%]">
+                                <div class="prose prose-invert prose-sm md:prose-base max-w-none" x-html="renderMarkdown(msg.content)"></div>
+                            </div>
+                        </div>
+                    </template>
+                    
+                    <div x-show="loading" class="flex gap-6">
+                        <div class="w-10 h-10 rounded-2xl bg-gray-800 animate-pulse border border-gray-700"></div>
+                        <div class="bg-gray-800 border border-gray-700 rounded-2xl px-6 py-4 flex items-center gap-2">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.1s]"></div>
+                            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.2s]"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="p-6">
+                <div class="max-w-4xl mx-auto relative group">
+                    <textarea 
+                        x-model="userInput" 
+                        @keydown.enter.prevent="if(!$event.shiftKey) sendMessage()"
+                        placeholder="Type your message to Rishant AI..."
+                        class="w-full bg-[#1e293b]/50 border border-gray-700 rounded-3xl px-6 py-5 pr-20 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:bg-[#1e293b] transition-all shadow-2xl resize-none min-h-[70px]"
+                        rows="1"></textarea>
+                    <button @click="sendMessage()" 
+                            :disabled="loading || !userInput.trim()"
+                            class="absolute right-3 bottom-3 p-4 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 text-white rounded-2xl transition-all shadow-lg active:scale-90">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+                <p class="text-[10px] text-center text-gray-600 mt-4 tracking-widest uppercase font-bold">Rishant AI | Private Build</p>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        function chatApp() {
+            return {
+                sidebarOpen: window.innerWidth > 1024,
+                userInput: '',
+                loading: false,
+                currentChatId: null,
+                messages: [],
+                chatHistory: [],
+                
+                settings: {
+                    apiKey: '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', 
+                    model: 'openai/gpt-4o-mini'
+                },
+
+                init() {
+                    const savedHistory = localStorage.getItem('ai_history_v5');
+                    if (savedHistory) this.chatHistory = JSON.parse(savedHistory);
+                    if (this.chatHistory.length > 0) this.loadChat(this.chatHistory[0].id);
+                    else this.createNewChat();
+                },
+
+                createNewChat() {
+                    const id = Date.now().toString();
+                    this.currentChatId = id;
+                    this.messages = [];
+                    this.chatHistory.unshift({ id, title: 'New Conversation', messages: [] });
+                    this.saveHistory();
+                },
+
+                loadChat(id) {
+                    const chat = this.chatHistory.find(c => c.id === id);
+                    if (chat) {
+                        this.currentChatId = id;
+                        this.messages = [...chat.messages];
+                        this.scrollToBottom();
+                    }
+                },
+
+                deleteChat(id) {
+                    this.chatHistory = this.chatHistory.filter(c => c.id !== id);
+                    if (this.currentChatId === id) this.createNewChat();
+                    this.saveHistory();
+                },
+
+                async sendMessage() {
+                    if (!this.userInput.trim() || this.loading) return;
+                    const prompt = this.userInput;
+                    this.messages.push({ role: 'user', content: prompt });
+                    this.userInput = '';
+                    this.loading = true;
+                    this.scrollToBottom();
+
+                    const currentChat = this.chatHistory.find(c => c.id === this.currentChatId);
+                    if (currentChat && currentChat.messages.length === 0) {
+                        currentChat.title = prompt.length > 25 ? prompt.substring(0, 25) + '...' : prompt;
+                    }
+
+                    try {
+                        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                            method: "POST",
+                            headers: {
+                                "Authorization": `Bearer ${this.settings.apiKey}`,
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                "model": this.settings.model,
+                                "messages": this.messages.map(m => ({ role: m.role, content: m.content }))
+                            })
+                        });
+                        const data = await response.json();
+                        if (data.error) throw new Error(data.error.message);
+                        this.messages.push({ role: 'assistant', content: data.choices[0].message.content });
+                        if (currentChat) {
+                            currentChat.messages = [...this.messages];
+                            this.saveHistory();
+                        }
+                    } catch (error) {
+                        this.messages.push({ role: 'assistant', content: `❌ **Error:** ${error.message}` });
+                    } finally {
+                        this.loading = false;
+                        this.scrollToBottom();
+                    }
+                },
+
+                saveHistory() { localStorage.setItem('ai_history_v5', JSON.stringify(this.chatHistory)); },
+                renderMarkdown(content) { return marked.parse(content); },
+                scrollToBottom() {
+                    setTimeout(() => {
+                        const container = document.getElementById('chat-container');
+                        container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+                    }, 100);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
